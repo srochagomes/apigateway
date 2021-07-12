@@ -1,0 +1,6 @@
+br/com/rd/conf/WebConfig.class
+br/com/rd/conf/FirstPreLastPostGlobalFilter.class
+br/com/rd/conf/SecurityConfig.class
+br/com/rd/GatewayApplication.class
+br/com/rd/conf/LoggingGlobalFiltersConfigurations.class
+br/com/rd/conf/AppConfig.class

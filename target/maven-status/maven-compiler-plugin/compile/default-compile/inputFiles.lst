@@ -1,0 +1,6 @@
+/home/sergio.121131/arquitetura/pocs/pocgatewaywebflux/src/main/java/br/com/rd/conf/AppConfig.java
+/home/sergio.121131/arquitetura/pocs/pocgatewaywebflux/src/main/java/br/com/rd/conf/LoggingGlobalFiltersConfigurations.java
+/home/sergio.121131/arquitetura/pocs/pocgatewaywebflux/src/main/java/br/com/rd/conf/WebConfig.java
+/home/sergio.121131/arquitetura/pocs/pocgatewaywebflux/src/main/java/br/com/rd/conf/FirstPreLastPostGlobalFilter.java
+/home/sergio.121131/arquitetura/pocs/pocgatewaywebflux/src/main/java/br/com/rd/GatewayApplication.java
+/home/sergio.121131/arquitetura/pocs/pocgatewaywebflux/src/main/java/br/com/rd/conf/SecurityConfig.java

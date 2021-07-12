@@ -1,0 +1,37 @@
+spring:
+  security:
+    oauth2:
+      resourceserver:
+        jwt:
+          issuer-uri: http://localhost:7888/auth/realms/poc_realm
+          jwk-set-uri: http://localhost:7888/auth/realms/poc_realm/protocol/openid-connect/certs
+  main:
+    web-application-type: reactive
+  jmx:
+    enabled: true
+  application:
+    name: gateway
+  cloud:
+    gateway:
+      routes:
+        - id: stock-service
+          uri: http://localhost:8888/v1/api/stocks
+          order: 10
+          predicates:
+            - Path=/v1/api/stocks/**
+
+        - id: token-service
+          uri: http://localhost:8887/v1/api/authbase/token
+          order: 1
+          predicates:
+            - Path=/v1/api/{api}/oauth2/token
+          filters:
+            - PreserveHostHeader
+            - SaveSession
+            - SetPath=/v1/api/authbase/token
+
+
+logging:
+  level: "info"
+
+
