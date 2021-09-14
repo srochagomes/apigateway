@@ -1,0 +1,17 @@
+{
+  "groups": [
+    {
+      "name": "apigateway.security",
+      "type": "br.com.rd.conf.securitypath.ApiGatewaySecurity",
+      "sourceType": "br.com.rd.conf.securitypath.ApiGatewaySecurity"
+    }
+  ],
+  "properties": [
+    {
+      "name": "apigateway.security.configs",
+      "type": "br.com.rd.conf.securitypath.ConfigPath",
+      "sourceType": "br.com.rd.conf.securitypath.ApiGatewaySecurity"
+    }
+  ],
+  "hints": []
+}

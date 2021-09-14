@@ -1,16 +1,17 @@
 spring:
+  application:
+    name: gateway
   security:
     oauth2:
       resourceserver:
         jwt:
-          issuer-uri: http://localhost:7888/auth/realms/poc_realm
-          jwk-set-uri: http://localhost:7888/auth/realms/poc_realm/protocol/openid-connect/certs
+          issuer-uri: https://kckdev.raiadrogasil.com.br/auth/realms/OMS
+          jwk-set-uri: https://kckdev.raiadrogasil.com.br/auth/realms/OMS/protocol/openid-connect/certs
   main:
     web-application-type: reactive
   jmx:
     enabled: true
-  application:
-    name: gateway
+
   cloud:
     gateway:
       routes:
@@ -30,8 +31,41 @@ spring:
             - SaveSession
             - SetPath=/v1/api/authbase/token
 
-
 logging:
   level: "info"
+  org:
+    springframework:
+      security: DEBUG
 
+keycloak:
+  use-resource-role-mappings: 'true'
+
+apigateway:
+  security:
+    configs:
+      pathMatchers:
+        -
+          method: POST
+          patterns: "/*/*/*/oauth2/token"
+          roles:
+            - admin
+            - teste
+
+        - method: GET
+          patterns: '/*/*/*/oauth2/token'
+          permitAll: false
+          roles:
+            - admin
+            - teste
+
+        -
+            patterns: '/*/*/*/oauth2/token/teste'
+            roles:
+              - admin
+              - teste
+
+      anyExchange:
+        roles:
+          - admin
+          - teste
 
