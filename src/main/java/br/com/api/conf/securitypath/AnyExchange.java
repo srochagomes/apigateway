@@ -1,4 +1,4 @@
-package br.com.rd.conf.securitypath;
+package br.com.api.conf.securitypath;
 
 import lombok.Data;
 import org.springframework.security.config.web.server.ServerHttpSecurity;
@@ -9,13 +9,13 @@ import java.util.Optional;
 public class AnyExchange extends Matcher{
 
     @Override
-    public void configure(ServerHttpSecurity httpSecurity) {
+    public ServerHttpSecurity.AuthorizeExchangeSpec configure(ServerHttpSecurity.AuthorizeExchangeSpec authorizeExchange) {
         Boolean permitAllAccess = Optional.ofNullable(this.getPermitAll()).orElseGet(() -> Boolean.FALSE);
 
         if(permitAllAccess){
-            httpSecurity.authorizeExchange().anyExchange().permitAll();
+            return  authorizeExchange.anyExchange().permitAll();
         }else{
-            httpSecurity.authorizeExchange().anyExchange().hasAnyRole(this.getRoles());
+            return authorizeExchange.anyExchange().hasAnyRole(this.getRoles());
         }
     }
 }

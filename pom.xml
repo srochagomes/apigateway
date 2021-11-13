@@ -8,16 +8,18 @@
 		<version>2.5.1</version>
 		<relativePath/>
 	</parent>
-	<groupId>br.com.rd</groupId>
-	<artifactId>gateway-application</artifactId>
+	<groupId>br.com.api</groupId>
+	<artifactId>apigateway</artifactId>
 	<version>0.0.1</version>
 	<name>GatewayApplication</name>
 	<description>API-Gateway Application</description>
+
 	<properties>
 		<java.version>11</java.version>
 		<spring-cloud.version>2020.0.3</spring-cloud.version>
 		<commons-configuration.version>1.10</commons-configuration.version>
 		<guava.version>20.0</guava.version>
+		<spring.cloud.kubernetes.version>1.1.6.RELEASE</spring.cloud.kubernetes.version>
 	</properties>
 
 	<dependencies>
@@ -26,7 +28,10 @@
 			<groupId>org.springframework.cloud</groupId>
 			<artifactId>spring-cloud-starter-gateway</artifactId>
 		</dependency>
-
+		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter-webflux</artifactId>
+		</dependency>
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-starter-reactor-netty</artifactId>
@@ -70,10 +75,23 @@
 		</dependency>
 
 		<dependency>
+			<groupId>br.com.rd.customlibs</groupId>
+			<artifactId>observability-lib</artifactId>
+			<version>1.1.0</version>
+		</dependency>
+
+
+		<dependency>
 			<groupId>commons-configuration</groupId>
 			<artifactId>commons-configuration</artifactId>
 			<version>${commons-configuration.version}</version>
 		</dependency>
+		<dependency>
+			<groupId>org.apache.commons</groupId>
+			<artifactId>commons-lang3</artifactId>
+			<version>3.9</version>
+		</dependency>
+
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-configuration-processor</artifactId>
@@ -101,6 +119,18 @@
 			<version>5.5.1</version>
 		</dependency>
 
+		<dependency>
+			<groupId>org.springframework.security.oauth.boot</groupId>
+			<artifactId>spring-security-oauth2-autoconfigure</artifactId>
+		</dependency>
+
+		<dependency>
+			<groupId>org.springframework.cloud</groupId>
+			<artifactId>spring-cloud-starter-kubernetes</artifactId>
+			<version>${spring.cloud.kubernetes.version}</version>
+		</dependency>
+
+
 	</dependencies>
 
 	<dependencyManagement>
@@ -116,15 +146,7 @@
 	</dependencyManagement>
 
 	<build>
-		<finalName>spring-boot-properties</finalName>
-		<resources>
-			<resource>
-				<directory>src/main/resources</directory>
-				<filtering>true</filtering>
-			</resource>
-		</resources>
 		<plugins>
-
 			<plugin>
 				<groupId>org.springframework.boot</groupId>
 				<artifactId>spring-boot-maven-plugin</artifactId>
@@ -151,5 +173,38 @@
 
 		</plugins>
 	</build>
+
+	<profiles>
+		<profile>
+			<id>dev</id>
+			<dependencies>
+				<dependency>
+					<groupId>org.springframework.cloud</groupId>
+					<artifactId>spring-cloud-starter-kubernetes-config</artifactId>
+					<version>${spring.cloud.kubernetes.version}</version>
+				</dependency>
+			</dependencies>
+		</profile>
+		<profile>
+			<id>qa</id>
+			<dependencies>
+				<dependency>
+					<groupId>org.springframework.cloud</groupId>
+					<artifactId>spring-cloud-starter-kubernetes-config</artifactId>
+					<version>${spring.cloud.kubernetes.version}</version>
+				</dependency>
+			</dependencies>
+		</profile>
+		<profile>
+			<id>prod</id>
+			<dependencies>
+				<dependency>
+					<groupId>org.springframework.cloud</groupId>
+					<artifactId>spring-cloud-starter-kubernetes-config</artifactId>
+					<version>${spring.cloud.kubernetes.version}</version>
+				</dependency>
+			</dependencies>
+		</profile>
+	</profiles>
 
 </project>

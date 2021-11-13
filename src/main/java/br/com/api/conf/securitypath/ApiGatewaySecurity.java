@@ -1,4 +1,4 @@
-package br.com.rd.conf.securitypath;
+package br.com.api.conf.securitypath;
 
 import lombok.Data;
 import org.springframework.boot.context.properties.ConfigurationProperties;
@@ -12,14 +12,16 @@ public class ApiGatewaySecurity {
 
     private ConfigPath configs;
 
-    public void configure(ServerHttpSecurity httpSecurity) {
+    public ServerHttpSecurity.AuthorizeExchangeSpec configure(ServerHttpSecurity.AuthorizeExchangeSpec authorizeExchangeSpec) {
 
         if (this.configs.hasPathMatchers()){
-            this.configs.configPathMatchers(httpSecurity);
+            authorizeExchangeSpec = this.configs.configPathMatchers(authorizeExchangeSpec);
         }
 
         if (this.configs.hasAnyExchange()){
-            this.configs.configAnyExchange(httpSecurity);
+            authorizeExchangeSpec = this.configs.configAnyExchange(authorizeExchangeSpec);
         }
+
+        return authorizeExchangeSpec;
     }
 }

@@ -1,4 +1,4 @@
-package br.com.rd.conf.securitypath;
+package br.com.api.conf.securitypath;
 
 import lombok.Data;
 import org.springframework.http.HttpMethod;
@@ -9,7 +9,7 @@ import org.springframework.util.ObjectUtils;
 public class Matcher {
 
     private String method;
-    private String patterns;
+    private String urlPattern;
     private Boolean permitAll;
     private String[] roles;
 
@@ -21,6 +21,11 @@ public class Matcher {
         return HttpMethod.resolve(this.method);
     }
 
-    public void configure(ServerHttpSecurity authorizeExchange) {
+    public boolean hasMethodSelected(){
+        return !ObjectUtils.isEmpty(this.method);
+    }
+
+    public ServerHttpSecurity.AuthorizeExchangeSpec configure(ServerHttpSecurity.AuthorizeExchangeSpec authorizeExchange) {
+        return null;
     }
 }

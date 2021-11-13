@@ -1,4 +1,4 @@
-package br.com.rd.conf;
+package br.com.api.conf;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

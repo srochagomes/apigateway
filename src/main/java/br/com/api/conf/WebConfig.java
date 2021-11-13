@@ -1,4 +1,4 @@
-package br.com.rd.conf;
+package br.com.api.conf;
 
 
 import org.springframework.context.annotation.Configuration;
