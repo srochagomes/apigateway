@@ -1,11 +1,20 @@
 server:
-  port: 8082
+  port: 8885
 
 springdoc:
   show-actuator: true
 
 management:
+  server:
+    port: 8888
+  health:
+    status:
+      http-mapping:
+        up: 200
+        down: 400
   endpoint:
+    restart:
+      enabled: true
     health:
       show-details: "ALWAYS"
   security:
@@ -15,10 +24,24 @@ management:
       base-path: "/actuator"
       exposure:
         include: "*"
+    enabled-by-default: true
+  info:
+    git:
+      mode: full
+  metrics:
+    export:
+      newrelic:
+        enabled: false
 
 spring:
   application:
-    name: gateway
+    name: omsapigatewaywebflux
+  jmx:
+    enabled: false
+  jackson:
+    default-property-inclusion: non_null
+  main:
+    web-application-type: reactive
 
   security:
     oauth2:
@@ -26,61 +49,96 @@ spring:
         jwt:
           issuer-uri: https://kckdev.raiadrogasil.com.br/auth/realms/OMS
           jwk-set-uri: https://kckdev.raiadrogasil.com.br/auth/realms/OMS/protocol/openid-connect/certs
-  main:
-    web-application-type: reactive
-  jmx:
-    enabled: true
+
   cloud:
     kubernetes:
       enabled: true
+      secrets:
+        enable-api: true
+        namespace: SPR_APP_NAME-secret
+      reload:
+        enabled: false
 
     gateway:
-      httpclient:
-        wiretap: true
-      httpserver:
-          wiretap: true
       metrics:
         enabled: true
-      routes:
-        - id: stock-service
-          uri: http://localhost:8888/v1/api/stocks
-          order: 10
-          predicates:
-            - Path=/v1/api/stocks/**
+      httpserver:
+        wiretap: true
+      httpclient:
+        wiretap: true
 
+      globalcors:
+        cors-configurations:
+          '[/**]':
+            allow-credentials: true
+            allowed-origins: http://localhost:4200
+            allowed-methods:
+              - GET
+              - POST
+              - PUT
+              - DELETE
+              - OPTIONS
+              - PATCH
+      routes:
         - id: token-service
-          uri: http://localhost:8887/v1/api/authbase/token
+          uri: http://localhost:8887/api/v1/authbase/token
           order: 1
           predicates:
-            - Path=/v1/api/{api}/oauth2/token
+            - Path=/api/v1/{api}/oauth2/token
           filters:
             - PreserveHostHeader
             - SaveSession
-            - SetPath=/v1/api/authbase/token
+            - SetPath=/api/v1/authbase/token
+
+        - id: bff-oms
+          uri: http://bffoms-dev:8887/api/v1/oms
+          order: 10
+          predicates:
+            - Path=/api/v1/oms/**
+
+kong:
+  host: oms-dev.rd.com.br
+
+
+springfox:
+  documentation:
+    swagger:
+      v2:
+        home: /docs
+        contactEmail: desenvolvimento_oms@rd.com.br
 
 
 apigateway:
   security:
     configs:
       pathMatchers:
-        - method: POST
+        -
           urlPattern: '/*/*/*/oauth2/token'
           permitAll: true
-
         -
           urlPattern: '/actuator/**'
           permitAll: true
-
-        - method: POST
-          urlPattern: "/*/*/stocks/*"
+        -
+          urlPattern: "/*/*/oms/**"
           roles:
+            - uma_protection
             - role-apigateway
-
+            - uma_authorization
+            - "ADM DO SISTEMA"
       anyExchange:
         roles:
           - role_user_poc
+log:
+  level: INFO
 
 logging:
   level:
+    root: ${log.level}
     org:
-      springframework: INFO
+      springframework: ${log.level}
+    br:
+      com:
+        rd: ${log.level}
+    com:
+      rd: ${log.level}
+
