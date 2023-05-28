@@ -2,15 +2,15 @@
   "groups": [
     {
       "name": "apigateway.security",
-      "type": "com.api.conf.securitypath.ApiGatewaySecurity",
-      "sourceType": "com.api.conf.securitypath.ApiGatewaySecurity"
+      "type": "com.api.apigateway.conf.securitypath.ApiGatewaySecurity",
+      "sourceType": "com.api.apigateway.conf.securitypath.ApiGatewaySecurity"
     }
   ],
   "properties": [
     {
       "name": "apigateway.security.configs",
-      "type": "com.api.conf.securitypath.ConfigPath",
-      "sourceType": "com.api.conf.securitypath.ApiGatewaySecurity"
+      "type": "com.api.apigateway.conf.securitypath.ConfigPath",
+      "sourceType": "com.api.apigateway.conf.securitypath.ApiGatewaySecurity"
     }
   ],
   "hints": []
