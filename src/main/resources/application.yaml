@@ -59,19 +59,14 @@ spring:
         wiretap: true
       httpclient:
         wiretap: true
-
       globalcors:
-        cors-configurations:
-          '[/**]':
-            allow-credentials: true
-            allowed-origins: http://localhost:4200
-            allowed-methods:
-              - GET
-              - POST
-              - PUT
-              - DELETE
-              - OPTIONS
-              - PATCH
+        corsConfigurations:
+          '[*]':
+            maxAge: 3600
+            allowCredentials: true
+            allowedOrigins: "http://localhost:4200"
+            allowedHeaders: "*"
+            allowedMethods: "GET, POST, PUT, DELETE, OPTIONS, PATCH"
       routes:
         - id: token-service
           uri: http://localhost:8887/api/v1/authbase/token
@@ -114,11 +109,8 @@ apigateway:
           permitAll: true
         -
           urlPattern: "/api/v1/sessions"
-          roles:
-            - uma_protection
-            - role-apigateway
-            - uma_authorization
-            - "ADM DO SISTEMA"
+          permitAll: true
+
         -
           urlPattern: "/*/*/oms/**"
           roles:
