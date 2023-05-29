@@ -59,30 +59,35 @@ spring:
         wiretap: true
       httpclient:
         wiretap: true
+
       globalcors:
-        corsConfigurations:
-          '[*]':
-            maxAge: 3600
+        cors-configurations:
+          '[/**]':
             allowCredentials: true
-            allowedOrigins: "http://localhost:4200"
+            allowedOrigins: "http://localhost:4200, http://localhost:3000"
             allowedHeaders: "*"
-            allowedMethods: "GET, POST, PUT, DELETE, OPTIONS, PATCH"
+            allowedMethods:
+              - GET
+              - POST
+              - PUT
+              - DELETE
+              - PATCH
       routes:
         - id: token-service
-          uri: http://localhost:8887/api/v1/authbase/token
+          uri: http://localhost:8887
           order: 1
           predicates:
-            - Path=/api/v1/{api}/oauth2/token
+            - Path=/authentication/v1/identifications/{action}
           filters:
             - PreserveHostHeader
             - SaveSession
-            - SetPath=/api/v1/authbase/token
+            - SetPath=/api/v1/authbase/{action}
 
         - id: session-service
-          uri: http://localhost:8887/api/v1/authbase/sessions
+          uri: http://localhost:8887
           order: 2
           predicates:
-            - Path=/api/v1/sessions
+            - Path=/authentication/v1/sessions
           filters:
             - PreserveHostHeader
             - SaveSession
@@ -102,14 +107,23 @@ apigateway:
     configs:
       pathMatchers:
         -
-          urlPattern: '/*/*/*/oauth2/token'
+          urlPattern: '/authentication/v1/identifications/**'
           permitAll: true
         -
           urlPattern: '/actuator/**'
           permitAll: true
-        -
-          urlPattern: "/api/v1/sessions"
+
+        - method: OPTIONS
+          urlPattern: "/authentication/v1/sessions"
           permitAll: true
+        -
+          urlPattern: "/authentication/v1/sessions"
+          roles:
+            - uma_protection
+            - role-apigateway
+            - uma_authorization
+            - "ADM DO SISTEMA"
+
 
         -
           urlPattern: "/*/*/oms/**"
