@@ -32,3 +32,8 @@ build/
 
 ### VS Code ###
 .vscode/
+
+### Shell devops ###
+create_image_on_server.sh
+increment-version.sh
+Dockerfile

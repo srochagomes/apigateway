@@ -1,38 +1,32 @@
 server:
-  port: 8885
+  port: ${PORT:8885}
+
+auth-base-api: ${AUTH_BASE_ADDRESS:localhost:8887}
+account-api: ${ACCOUNT_ADDRESS:localhost:8888}
 
 keycloak-detail: /realms/eselwer/.well-known/openid-configuration
 
 identity-provider:
   address: ${KEYCLOAK_ADDRESS:192.168.39.186:30800}
-  helm: eselwer
-
-springdoc:
-  show-actuator: true
+  helm: ${KEYCLOAK_HELM:eselwer}
 
 management:
-  server:
-    port: 8888
-    base-path: /health
   health:
-    status:
-      http-mapping:
-        up: 200
-        down: 400
-  endpoint:
-    restart:
+    livenessstate:
       enabled: true
-    health:
-      show-details: "ALWAYS"
+    readinessstate:
+      enabled: true
   endpoints:
     web:
-      base-path: "/actuator"
       exposure:
-        include: "*"
-    enabled-by-default: true
-  info:
-    git:
-      mode: full
+        include: '*'
+      base-path: /_app-state
+  endpoint:
+    health:
+      show-details: always
+      probes:
+        add-additional-paths: true
+        enabled: true
 
 spring:
   application:
@@ -64,7 +58,7 @@ spring:
         cors-configurations:
           '[/**]':
             allowCredentials: true
-            allowedOrigins: "http://localhost:4200, http://localhost:3000"
+            allowedOrigins: ${GATEWAY_ALLOW_ORING:"http://localhost:4200, http://localhost:3000"}
             allowedHeaders: "*"
             allowedMethods:
               - GET
@@ -74,48 +68,48 @@ spring:
               - PATCH
       routes:
         - id: token-service
-          uri: http://localhost:8887
+          uri: http://${auth-base-api}
           order: 1
           predicates:
             - Path=/authentication/v1/identifications/{action}
           filters:
             - PreserveHostHeader
             - SaveSession
-            - SetPath=/api/v1/authbase/{action}
+            - SetPath=/authbase/{action}
 
         - id: session-service
-          uri: http://localhost:8887
+          uri: http://${auth-base-api}
           order: 2
           predicates:
             - Path=/authentication/v1/sessions
           filters:
             - PreserveHostHeader
             - SaveSession
-            - SetPath=/api/v1/authbase/sessions
+            - SetPath=/authbase/sessions
 
 
-        - id: bff-oms
-          uri: http://192.168.39.15:32699
+        - id: account-api
+          uri: http://${account-api}
           order: 10
           predicates:
-            - Path=/api/v1/oms/**
-          filters:
-            - SetPath=/realms/eselwer/.well-known/openid-configuration
+            - Path=/manager/v1/account/**
+
 
 apigateway:
   security:
     configs:
       pathMatchers:
+        - method: GET
+          urlPattern: "/_app-state/health"
+          permitAll: true
         -
           urlPattern: '/authentication/v1/identifications/**'
           permitAll: true
-        -
-          urlPattern: '/actuator/**'
-          permitAll: true
 
         - method: OPTIONS
-          urlPattern: "/authentication/v1/sessions"
+          urlPattern: "/**"
           permitAll: true
+
         -
           urlPattern: "/authentication/v1/sessions"
           roles:
@@ -124,9 +118,8 @@ apigateway:
             - uma_authorization
             - "ADM DO SISTEMA"
 
-
         -
-          urlPattern: "/*/*/oms/**"
+          urlPattern: "/manager/**"
           roles:
             - uma_protection
             - role-apigateway
@@ -136,7 +129,7 @@ apigateway:
         roles:
           - role_user_poc
 log:
-  level: INFO
+  level: ${LOG_LEVEL:INFO}
 
 logging:
   level:
