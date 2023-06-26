@@ -90,9 +90,13 @@ spring:
 
         - id: account-api
           uri: http://${account-api}
-          order: 10
+          order: 3
           predicates:
-            - Path=/manager/v1/account/**
+            - Path=/manager/v1/accounts/**
+          filters:
+            - PreserveHostHeader
+            - SaveSession
+            - SetPath=/accounts
 
 
 apigateway:
