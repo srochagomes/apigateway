@@ -7,7 +7,7 @@ account-api: ${ACCOUNT_ADDRESS:localhost:8888}
 keycloak-detail: /realms/eselwer/.well-known/openid-configuration
 
 identity-provider:
-  address: ${KEYCLOAK_ADDRESS:192.168.39.186:30800}
+  address: ${KEYCLOAK_ADDRESS:192.168.39.209:30427}
   helm: ${KEYCLOAK_HELM:eselwer}
 
 management:
@@ -87,16 +87,27 @@ spring:
             - SaveSession
             - SetPath=/authbase/sessions
 
+        - id: user-access
+          uri: http://${auth-base-api}
+          order: 3
+          predicates:
+            - Path=/access/v1/users/**
+          filters:
+            - PreserveHostHeader
+            - SaveSession
+            - RewritePath=/access/v1/users, /users
+
+
 
         - id: account-api
           uri: http://${account-api}
-          order: 3
+          order: 4
           predicates:
             - Path=/manager/v1/accounts/**
           filters:
             - PreserveHostHeader
             - SaveSession
-            - SetPath=/accounts
+            - RewritePath=/manager/v1/accounts, /accounts
 
 
 apigateway:
@@ -121,6 +132,15 @@ apigateway:
             - role-apigateway
             - uma_authorization
             - "ADM DO SISTEMA"
+
+        -
+          urlPattern: "/access/**"
+          roles:
+            - uma_protection
+            - role-apigateway
+            - uma_authorization
+            - "ADM DO SISTEMA"
+
 
         -
           urlPattern: "/manager/**"
