@@ -7,7 +7,7 @@ account-api: ${ACCOUNT_ADDRESS:localhost:8888}
 keycloak-detail: /realms/eselwer/.well-known/openid-configuration
 
 identity-provider:
-  address: ${KEYCLOAK_ADDRESS:192.168.39.209:30427}
+  address: ${KEYCLOAK_ADDRESS:keycloak-local.com:9776}
   helm: ${KEYCLOAK_HELM:eselwer}
 
 management:
@@ -58,18 +58,21 @@ spring:
         cors-configurations:
           '[/**]':
             allowCredentials: true
-            allowedOrigins: ${GATEWAY_ALLOW_ORING:"http://localhost:4200, http://localhost:3000"}
+            allowedOrigins: ${GATEWAY_ALLOW_ORING:http://poc-eselwer.sytes.net:3000, http://localhost:3000}
             allowedHeaders: "*"
+            maxAge: 30
             allowedMethods:
               - GET
               - POST
               - PUT
               - DELETE
               - PATCH
+              - OPTIONS
+
       routes:
         - id: token-service
           uri: http://${auth-base-api}
-          order: 1
+          order: 1000
           predicates:
             - Path=/authentication/v1/identifications/{action}
           filters:
@@ -77,9 +80,10 @@ spring:
             - SaveSession
             - SetPath=/authbase/{action}
 
+
         - id: session-service
           uri: http://${auth-base-api}
-          order: 2
+          order: 1500
           predicates:
             - Path=/authentication/v1/sessions
           filters:
@@ -89,7 +93,7 @@ spring:
 
         - id: user-access
           uri: http://${auth-base-api}
-          order: 3
+          order: 1700
           predicates:
             - Path=/access/v1/users/**
           filters:
@@ -101,14 +105,13 @@ spring:
 
         - id: account-api
           uri: http://${account-api}
-          order: 4
+          order: 2000
           predicates:
             - Path=/manager/v1/accounts/**
           filters:
             - PreserveHostHeader
             - SaveSession
             - RewritePath=/manager/v1/accounts, /accounts
-
 
 apigateway:
   security:
@@ -124,6 +127,14 @@ apigateway:
         - method: OPTIONS
           urlPattern: "/**"
           permitAll: true
+
+        -
+          urlPattern: "/authentication/v1/identities-providers/**"
+          roles:
+            - uma_protection
+            - role-apigateway
+            - uma_authorization
+            - "ADM DO SISTEMA"
 
         -
           urlPattern: "/authentication/v1/sessions"

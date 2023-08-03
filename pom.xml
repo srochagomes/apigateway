@@ -10,7 +10,7 @@
 	</parent>
 	<groupId>com.api</groupId>
 	<artifactId>api-gateway</artifactId>
-	<version>0.0.7</version>
+	<version>0.0.11</version>
 	<name>api-gateway</name>
 	<description>ApiGateway</description>
 	<properties>
@@ -19,6 +19,10 @@
 		<commons-configuration2.version>2.9.0</commons-configuration2.version>
 	</properties>
 	<dependencies>
+		<dependency>
+			<groupId>org.springframework.cloud</groupId>
+			<artifactId>spring-cloud-starter-bootstrap</artifactId>
+		</dependency>
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-starter-actuator</artifactId>
