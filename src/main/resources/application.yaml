@@ -1,5 +1,6 @@
 server:
   port: ${PORT:8885}
+  max-http-request-header-size: 168192
 
 auth-base-api: ${AUTH_BASE_ADDRESS:localhost:8887}
 account-api: ${ACCOUNT_ADDRESS:localhost:8888}
@@ -40,6 +41,10 @@ spring:
 
   security:
     oauth2:
+      client:
+        provider:
+          keycloak:
+            issuer-uri: http://${identity-provider.address}/realms/${identity-provider.helm}
       resourceserver:
         jwt:
           issuer-uri: http://${identity-provider.address}/realms/${identity-provider.helm}
@@ -76,10 +81,14 @@ spring:
           predicates:
             - Path=/authentication/v1/identifications/{action}
           filters:
-            - PreserveHostHeader
-            - SaveSession
             - SetPath=/authbase/{action}
-
+            - RemoveRequestHeader=X-Forwarded
+            - RemoveRequestHeader=X-Forwarded-Host
+            - RemoveRequestHeader=X-Forwarded-Port
+            - SetRequestHeader=X-Forwarded, ${identity-provider.address}
+            - SetRequestHeader=X-Forwarded-Host, ${identity-provider.address}
+            - SetRequestHeader=X-Forwarded-Port, 9776
+            - PreserveHostHeader
 
         - id: session-service
           uri: http://${auth-base-api}
@@ -120,9 +129,11 @@ apigateway:
         - method: GET
           urlPattern: "/_app-state/health"
           permitAll: true
+
         -
           urlPattern: '/authentication/v1/identifications/**'
           permitAll: true
+
 
         - method: OPTIONS
           urlPattern: "/**"
@@ -164,7 +175,7 @@ apigateway:
         roles:
           - role_user_poc
 log:
-  level: ${LOG_LEVEL:INFO}
+  level: ${LOG_LEVEL:DEBUG}
 
 logging:
   level:
