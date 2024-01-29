@@ -5,11 +5,11 @@ server:
 auth-base-api: ${AUTH_BASE_ADDRESS:localhost:8887}
 account-api: ${ACCOUNT_ADDRESS:localhost:8888}
 
-keycloak-detail: /realms/eselwer/.well-known/openid-configuration
-
 identity-provider:
-  address: ${KEYCLOAK_ADDRESS:keycloak-local.com:9776}
-  helm: ${KEYCLOAK_HELM:eselwer}
+  address: ${KEYCLOAK_ADDRESS:192.168.15.103:31895}
+  helm: ${KEYCLOAK_HELM:feriaz}
+
+keycloak-detail: /realms/${identity-provider.helm}/.well-known/openid-configuration
 
 management:
   health:

@@ -8,8 +8,11 @@ import java.util.Optional;
 @Data
 public class AnyExchange extends Matcher{
 
+
+
     @Override
     public ServerHttpSecurity.AuthorizeExchangeSpec configure(ServerHttpSecurity.AuthorizeExchangeSpec authorizeExchange) {
+        super.configure(authorizeExchange);
         Boolean permitAllAccess = Optional.ofNullable(this.getPermitAll()).orElseGet(() -> Boolean.FALSE);
 
         if(permitAllAccess){

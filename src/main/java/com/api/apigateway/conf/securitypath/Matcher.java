@@ -18,7 +18,7 @@ public class Matcher {
             return null;
         }
 
-        return HttpMethod.resolve(this.method);
+        return HttpMethod.valueOf(this.method);
     }
 
     public boolean hasMethodSelected(){
