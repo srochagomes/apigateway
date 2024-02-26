@@ -2,6 +2,7 @@ server:
   port: ${PORT:8885}
   max-http-request-header-size: 168192
 
+search-domain-api: ${SEARCH_DOMAIN_ADDRESS:localhost:8887}
 auth-base-api: ${AUTH_BASE_ADDRESS:localhost:8887}
 account-api: ${ACCOUNT_ADDRESS:localhost:8888}
 
@@ -110,8 +111,6 @@ spring:
             - SaveSession
             - RewritePath=/access/v1/users, /users
 
-
-
         - id: account-api
           uri: http://${account-api}
           order: 2000
@@ -121,6 +120,18 @@ spring:
             - PreserveHostHeader
             - SaveSession
             - RewritePath=/manager/v1/accounts, /accounts
+
+        - id: search-domain-api
+          uri: http://${search-domain-api}
+          order: 2500
+          predicates:
+            - Path=/domains/v1/searchs/**
+          filters:
+            - PreserveHostHeader
+            - SaveSession
+            - RewritePath=/domains/v1/searchs, /searchs-domains
+
+
 
 apigateway:
   security:
@@ -171,6 +182,15 @@ apigateway:
             - role-apigateway
             - uma_authorization
             - "ADM DO SISTEMA"
+
+        -
+          urlPattern: "/domains/**"
+          roles:
+            - uma_protection
+            - role-apigateway
+            - uma_authorization
+            - "ADM DO SISTEMA"
+
       anyExchange:
         roles:
           - role_user_poc
